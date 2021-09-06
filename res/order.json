@@ -1,0 +1,20 @@
+{
+    "date":1,
+    "id":"",
+    "type_id":"",
+    "user_id":"",
+    "company":"",
+    "order_date":1,
+    "delivery_date":1,
+    "job_details":"",
+    "status":"",
+    "completed":"",
+    "admin_note":"",
+    "user_note":"",
+    "files":[
+        {
+            "type":"",
+            "link":""
+        }
+    ]
+}
