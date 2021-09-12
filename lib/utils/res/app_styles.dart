@@ -38,42 +38,41 @@ class AppStyles {
   );
 
   static final primaryTextFieldDecor = InputDecoration(
-    errorStyle: TextStyle(fontSize: 12, color: AppColors.darkRed),
+    errorStyle: TextStyle(fontSize: 0.1, color: AppColors.darkRed),
     enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: AppColors.darkerBrown, width: 2),
+      borderSide: BorderSide(color: AppColors.white, width: 2),
       borderRadius: BorderRadius.all(
-        Radius.circular(50),
+        Radius.circular(4),
       ),
     ),
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(color: AppColors.white, width: 2),
       borderRadius: BorderRadius.all(
-        Radius.circular(50),
+        Radius.circular(4),
       ),
     ),
     border: OutlineInputBorder(
-      borderSide: BorderSide(color: AppColors.darkerBrown, width: 2),
+      borderSide: BorderSide(color: AppColors.white, width: 2),
       borderRadius: BorderRadius.all(
-        Radius.circular(50),
+        Radius.circular(4),
       ),
     ),
     disabledBorder: OutlineInputBorder(
-      borderSide:
-          BorderSide(color: AppColors.darkerBrown.withOpacity(0.3), width: 1),
+      borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3), width: 1),
       borderRadius: BorderRadius.all(
-        Radius.circular(50),
+        Radius.circular(4),
       ),
     ),
     errorBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: AppColors.darkRed, width: 2),
+      borderSide: BorderSide(color: AppColors.red, width: 2),
       borderRadius: BorderRadius.all(
-        Radius.circular(50),
+        Radius.circular(4),
       ),
     ),
     focusedErrorBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: AppColors.darkRed, width: 1.5),
+      borderSide: BorderSide(color: AppColors.red, width: 1.5),
       borderRadius: BorderRadius.all(
-        Radius.circular(50),
+        Radius.circular(4),
       ),
     ),
     isDense: true,

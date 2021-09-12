@@ -38,7 +38,7 @@ class ForgotpasswordDesktop extends StatelessWidget {
               child: Opacity(
                 opacity: 0.8,
                 child: Image.asset(
-                  getImage('back.jpg'),
+                  getImage('back.png'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -113,7 +113,7 @@ class ForgotpasswordMobile extends StatelessWidget {
               child: Opacity(
                 opacity: 0.8,
                 child: Image.asset(
-                  getImage('back.jpg'),
+                  getImage('back.png'),
                   fit: BoxFit.cover,
                 ),
               ),

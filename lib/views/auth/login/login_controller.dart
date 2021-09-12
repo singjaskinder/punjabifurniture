@@ -16,8 +16,8 @@ class LoginController extends GetxController {
   void login() async {
     // emailCtrl.text = 'compy@ee.com';
     // passwordCtrl.text = '1234567890';
-    // emailCtrl.text = 'admin@email.com';
-    // passwordCtrl.text = 'qwertyuiop';
+    emailCtrl.text = 'admin@email.com';
+    passwordCtrl.text = 'qwertyuiop';
     if (emailCtrl.text.isEmpty) {
       BuildDialog(description: 'Email cannot be empty');
       return;
@@ -62,7 +62,7 @@ class LoginController extends GetxController {
   }
 
   void toBuildNavigation() {
-    Get.offNamed(Routes.home);
+    Get.offNamed(Routes.home, arguments: 'qwiodjwoiq');
   }
 
   void toForgotPassword() {

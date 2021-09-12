@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,94 +31,102 @@ class NavigationDesktop extends StatelessWidget {
   Widget build(BuildContext context) {
     final BuildNavigatorController controller = Get.find();
     return Scaffold(
+      backgroundColor: AppColors.black,
       body: Stack(
         children: [
           Positioned.fill(
             child: Opacity(
-              opacity: 0.8,
+              opacity: 0.7,
               child: Image.asset(
-                getImage('back.jpg'),
+                getImage('back.png'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          Column(
-            children: [
-              Container(
-                padding: EdgeInsets.fromLTRB(30, 25, 30, 20),
-                color: AppColors.darkerBrown.withOpacity(0.8),
-                child: Row(
-                  children: [
-                    BuildSizedBox(
-                      width: 4,
-                    ),
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: BuildText(
-                        'Punjabi Furniture',
-                        size: 4,
-                        fontFamily: GoogleFonts.bebasNeue().fontFamily,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.5,
-                        color: AppColors.lighterBrown,
+          Padding(
+            padding: EdgeInsets.fromLTRB(SizeConfig.widthMultiplier * 12, 25,
+                SizeConfig.widthMultiplier * 12, 20),
+            child: Column(
+              children: [
+                Container(
+                  child: Row(
+                    children: [
+                      BuildSizedBox(),
+                      Image.asset(
+                        getImage('logo.png'),
+                        width: SizeConfig.widthMultiplier * 40,
+                        fit: BoxFit.cover,
                       ),
-                    ),
-                    Spacer(),
-                    for (int i = 0; i < controller.menus.length; i++)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 5),
-                        child: Material(
-                          color: AppColors.transparent,
-                          child: InkWell(
-                            onTap: () => controller.selectedIndex.value = i,
-                            borderRadius: BorderRadius.circular(10),
-                            child: Obx(() => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 12),
-                                  decoration: BoxDecoration(
-                                      color: controller.selectedIndex.value == i
-                                          ? AppColors.lightBrown
-                                              .withOpacity(0.5)
-                                          : AppColors.transparent,
-                                      borderRadius: BorderRadius.circular(10)),
+                      Spacer(),
+                      Icon(
+                        Icons.person,
+                        color: AppColors.white,
+                        size: SizeConfig.imageSizeMultiplier * 7,
+                      ),
+                      BuildText(
+                        controller.isAdmin ? 'Admin' : 'User',
+                        size: 3.4,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      BuildSizedBox(
+                        width: 3,
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  thickness: 4,
+                  color: AppColors.white,
+                ),
+                BuildSizedBox(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: SizeConfig.widthMultiplier * 25,
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Column(
+                        children: [
+                          for (int i = 0; i < controller.menus.length; i++)
+                            Obx(
+                              () => InkWell(
+                                onTap: () => controller.selectedIndex.value = i,
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(10),
+                                  margin: EdgeInsets.only(bottom: 5),
                                   child: BuildText(
                                     controller.menus[i].label!,
+                                    size: 2,
+                                    fontWeight:
+                                        controller.selectedIndex.value == i
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                     color: controller.selectedIndex.value == i
-                                        ? AppColors.white
-                                        : AppColors.lightBrown,
-                                    size: 1.65,
+                                        ? AppColors.darkBrown
+                                        : AppColors.black,
                                   ),
-                                )),
-                          ),
-                        ),
-                      ),
-                    BuildSizedBox(
-                      width: 3,
-                    ),
-                    GestureDetector(
-                      onTap: () => controller.toLogout(),
-                      child: Icon(
-                        Icons.logout,
-                        color: AppColors.lighterBrown,
-                        size: SizeConfig.imageSizeMultiplier * 4,
+                                ),
+                              ),
+                            )
+                        ],
                       ),
                     ),
                     BuildSizedBox(
-                      width: 4,
+                      width: 1.5,
                     ),
+                    Expanded(
+                      child: Obx(() => controller
+                          .menus[controller.selectedIndex.value].view!),
+                    )
                   ],
-                ),
-              ),
-              Divider(
-                height: 4,
-                color: AppColors.white,
-              ),
-              BuildSizedBox(),
-              Expanded(
-                  child: Obx(() =>
-                      controller.menus[controller.selectedIndex.value].view!))
-            ],
+                )
+              ],
+            ),
           )
         ],
       ),
@@ -132,13 +141,14 @@ class NavigationMobile extends StatelessWidget {
   Widget build(BuildContext context) {
     final BuildNavigatorController controller = Get.find();
     return Scaffold(
+      backgroundColor: AppColors.black,
       body: Stack(
         children: [
           Positioned.fill(
             child: Opacity(
-              opacity: 0.8,
+              opacity: 0.7,
               child: Image.asset(
-                getImage('back.jpg'),
+                getImage('back.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -163,14 +173,6 @@ class NavigationMobile extends StatelessWidget {
                       ),
                     ),
                     Spacer(),
-                    GestureDetector(
-                      onTap: () => controller.toLogout(),
-                      child: Icon(
-                        Icons.logout,
-                        color: AppColors.lighterBrown,
-                        size: SizeConfig.imageSizeMultiplier * 4,
-                      ),
-                    ),
                   ],
                 ),
               ),

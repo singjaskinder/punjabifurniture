@@ -15,7 +15,14 @@ import 'package:punjabifurniture/utils/res/app_styles.dart';
 import 'package:punjabifurniture/utils/size_config.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+enum ViewType {
+  manageAction,
+  addUser,
+  manageUser,
+}
+
 class UsersController extends GetxController {
+  final viewType = (ViewType.manageUser).obs;
   final userApis = UserRepo();
   final formKey = GlobalKey<FormState>();
   final companyCtrl = TextEditingController();
@@ -30,6 +37,16 @@ class UsersController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+  }
+
+  String viewTitle() {
+    if (viewType.value == ViewType.addUser) {
+      return 'create user';
+    } else if (viewType.value == ViewType.manageUser) {
+      return 'manage user';
+    } else {
+      return 'user profile';
+    }
   }
 
   void togglePassword() => showPassword.value = !showPassword.value;
@@ -285,7 +302,6 @@ class UsersController extends GetxController {
           final userData = await auth.createUserWithEmailAndPassword(
               email: user.email!, password: user.password!);
           user.id = userData.user!.uid;
-          user.password = '';
           await userApis.create(user);
           await auth.signOut();
         }

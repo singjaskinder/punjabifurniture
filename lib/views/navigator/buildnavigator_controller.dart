@@ -8,14 +8,20 @@ import 'package:punjabifurniture/views/navigator/dashboard/dashboard.dart';
 import 'package:punjabifurniture/views/navigator/history/history.dart';
 import 'package:punjabifurniture/views/navigator/users/users.dart';
 
+import 'logout/logout.dart';
+
 class BuildNavigatorController extends GetxController {
   final authApis = AuthRepo();
   late bool isAdmin;
-  final selectedIndex = 0.obs;
+  final selectedIndex = 1.obs;
   final menus = [
     NavMenu(label: 'Dashboard', view: Dashboard()),
     NavMenu(label: 'Users', view: Users()),
+    NavMenu(label: 'Order', view: Users()),
+    NavMenu(label: 'Order Status', view: Users()),
+    NavMenu(label: 'Users', view: Users()),
     NavMenu(label: 'History', view: History()),
+    NavMenu(label: 'Logout', view: Logout()),
   ];
   late String type;
 
@@ -28,18 +34,7 @@ class BuildNavigatorController extends GetxController {
     }
   }
 
-  void toLogout() {
-    final onPos = () async {
-      await authApis.logout();
-      Get.offNamed(Routes.login);
-    };
-    BuildDialog(
-        title: 'Confirmation',
-        description: 'Are you sure you want to logout?',
-        negLabel: 'No',
-        posLabel: 'Yes',
-        onPos: onPos);
-  }
+  
 }
 
 class NavMenu {

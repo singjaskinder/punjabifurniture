@@ -37,6 +37,8 @@ class DashboardController extends GetxController {
   String selectedUserId = '';
   final orderDate = 0.obs;
   final deliveryDate = 0.obs;
+  final searchCtrl = TextEditingController();
+  final searchText = ''.obs;
   final typedIdCtrl = TextEditingController();
   final jobDetailsCtrl = TextEditingController();
   final noteCtrl = TextEditingController();
@@ -50,6 +52,10 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     isAdmin = (Preferences.saver.getString('type') ?? 'admin') == 'admin';
+    searchCtrl.addListener(() {
+      searchText.value = searchCtrl.text;
+      update();
+    });
   }
 
   void getUsers() async {
@@ -84,6 +90,8 @@ class DashboardController extends GetxController {
       orderDate.value = order.orderDate!;
       deliveryDate.value = order.deliveryDate!;
       noteCtrl.text = getNotes(order);
+      selectedUser.value = order.company!;
+      selectedUserId = order.userId!;
       files.clear();
       for (Files file in order.files ?? []) {
         files.add(file);
@@ -135,7 +143,7 @@ class DashboardController extends GetxController {
                         height: 2,
                       ),
                       TextField(
-                        enabled: isAdmin && !isUpdate,
+                        enabled: isAdmin,
                         controller: typedIdCtrl,
                         style:
                             AppStyles.primaryTextStyle.copyWith(fontSize: 18),
@@ -159,8 +167,8 @@ class DashboardController extends GetxController {
                                 fontWeight: FontWeight.bold,
                                 size: getValueForScreenType<double>(
                                   context: Get.context!,
-                                  mobile: 1.6,
-                                  desktop: 0.5,
+                                  mobile: 2,
+                                  desktop: 1,
                                 ),
                               ),
                             ),
@@ -570,6 +578,19 @@ class DashboardController extends GetxController {
     }
   }
 
+  void updateStatus(OrderM order) async {
+    try {
+      isLoading(true);
+      await orderApis.update(order);
+      isLoading(false);
+      BuildDialog(title: 'Confirmation', description: 'Job status updated');
+    } catch (e) {
+      print(e);
+      isLoading(false);
+      BuildDialog();
+    }
+  }
+
   void auOrder(bool isUpdate, OrderM? order) async {
     if (typedIdCtrl.text.isEmpty) {
       BuildDialog(description: 'Please enter order id');
@@ -606,7 +627,7 @@ class DashboardController extends GetxController {
 
     final orderM = OrderM(
         date: setDate(),
-        typeId: typedIdCtrl.text.trim(),
+        typeId: typedIdCtrl.text.trim().toLowerCase(),
         id: isUpdate ? order!.id : '',
         userId: selectedUserId,
         company: selectedUser.value,
@@ -615,21 +636,20 @@ class DashboardController extends GetxController {
         jobDetails: jobDetailsCtrl.text.trim(),
         status: selectedStatus.value,
         completed: selectedStatus.value == 'Received',
-        adminNote: isAdmin ? noteCtrl.text.trim() : '',
-        userNote: !isAdmin ? noteCtrl.text.trim() : '',
+        adminNote: isAdmin ? noteCtrl.text.trim() : order?.adminNote ?? '',
+        userNote: !isAdmin ? noteCtrl.text.trim() : order?.userNote ?? '',
         files: isUpdate
             ? files.map((element) => element as Files).toList()
             : filesM);
-
+    final res = await orderApis.checkTypeId(orderM);
+    if (res) {
+      isLoading(false);
+      BuildDialog(description: 'Order Id already exists');
+      return;
+    }
     if (isUpdate) {
       await orderApis.update(orderM);
     } else {
-      final res = await orderApis.checkTypeId(orderM);
-      if (res) {
-        isLoading(false);
-        BuildDialog(description: 'Order Id already exists');
-        return;
-      }
       await orderApis.create(orderM);
     }
     Get.back();
@@ -669,11 +689,11 @@ class DashboardController extends GetxController {
   }
 
   Stream<QuerySnapshot> watchForAdmin() async* {
-    yield* orderApis.watch(false, '');
+    yield* orderApis.watch(false, searchText.value, isAdmin);
   }
 
   Stream<QuerySnapshot> watchForUser() async* {
     String id = Preferences.saver.getString('id')!;
-    yield* orderApis.watch(false, id);
+    yield* orderApis.watch(false, id, isAdmin);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:punjabifurniture/utils/res/app_colors.dart';
+import 'package:punjabifurniture/utils/size_config.dart';
 import 'text.dart';
 import 'sized_box.dart';
 
@@ -224,6 +225,63 @@ class BuildRoundedFloatingButton extends StatelessWidget {
             color: AppColors.lighterBrown,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class BuildBackButton extends StatelessWidget {
+  const BuildBackButton({required this.onTap, Key? key}) : super(key: key);
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: SizeConfig.widthMultiplier * 15,
+      child: Center(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(5),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.arrow_back,
+                  color: AppColors.white,
+                  size: SizeConfig.widthMultiplier * 4,
+                ),
+                BuildText(
+                  'Back',
+                  color: AppColors.white,
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class BuildWhiteButton extends StatelessWidget {
+  const BuildWhiteButton({required this.onTap, required this.label, Key? key})
+      : super(key: key);
+  final VoidCallback onTap;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: TextButton(
+        onPressed: onTap,
+        style: ButtonStyle(
+            padding: MaterialStateProperty.all(
+                EdgeInsets.symmetric(vertical: 14, horizontal: 20)),
+            backgroundColor: MaterialStateProperty.all(AppColors.white)),
+        child: BuildText(label.toUpperCase(),
+            size: 1.6, fontWeight: FontWeight.bold),
       ),
     );
   }

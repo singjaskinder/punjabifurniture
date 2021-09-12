@@ -21,11 +21,11 @@ class HistoryController extends GetxController {
   }
 
   Stream<QuerySnapshot> watchForAdmin() async* {
-    yield* orderApis.watch(true, '');
+    yield* orderApis.watch(true, '', isAdmin);
   }
 
   Stream<QuerySnapshot> watchForUser() async* {
     String id = Preferences.saver.getString('id')!;
-    yield* orderApis.watch(true, id);
+    yield* orderApis.watch(true, id, isAdmin);
   }
 }

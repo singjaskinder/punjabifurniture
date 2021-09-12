@@ -10,7 +10,7 @@ class BuildText extends StatelessWidget {
     this.fontWeight = FontWeight.w400,
     this.textAlign,
     this.letterSpacing,
-    this.fontFamily = 'Almarai',
+    this.fontFamily,
     this.lineHeight,
     this.overflow,
     this.textDecoration,

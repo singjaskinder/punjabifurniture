@@ -12,7 +12,7 @@ abstract class OrderApis {
   Future<void> delete(OrderM order);
   Future<bool> checkTypeId(OrderM order);
   Future<List<UserM>> getUsers();
-  Stream<QuerySnapshot> watch(bool isCompleted, String id);
+  Stream<QuerySnapshot> watch(bool isCompleted, String id, bool isAdmin);
   Future<List<String>> validateFiles(List<dynamic> files);
 }
 
@@ -49,12 +49,23 @@ class OrderRepo extends OrderApis {
   }
 
   @override
-  Stream<QuerySnapshot> watch(bool isCompleted, String id) async* {
+  Stream<QuerySnapshot> watch(
+      bool isCompleted, String id, bool isAdmin) async* {
     late Query query;
-    if (id.isEmpty) {
+    if (id.isEmpty & isAdmin) {
       query = _orderStore
           .where('completed', isEqualTo: isCompleted)
           .orderBy('date', descending: true);
+    } else if (id.isNotEmpty && isAdmin) {
+      query = _orderStore
+          .where('completed', isEqualTo: isCompleted)
+          .where('typed_id', isGreaterThanOrEqualTo: id)
+          .where('typed_id', isLessThan: id + 'z');
+    } else if (id.isNotEmpty && isCompleted && isAdmin) {
+      query = _orderStore
+          .where('completed', isEqualTo: isCompleted)
+          .where('typed_id', isGreaterThanOrEqualTo: id)
+          .where('typed_id', isLessThan: id + 'z');
     } else {
       query = _orderStore
           .where('user_id', isEqualTo: id)
