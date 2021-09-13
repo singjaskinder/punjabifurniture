@@ -581,6 +581,7 @@ class DashboardController extends GetxController {
   void updateStatus(OrderM order) async {
     try {
       isLoading(true);
+      order.completed = order.status == 'Received';
       await orderApis.update(order);
       isLoading(false);
       BuildDialog(title: 'Confirmation', description: 'Job status updated');
@@ -641,19 +642,15 @@ class DashboardController extends GetxController {
         files: isUpdate
             ? files.map((element) => element as Files).toList()
             : filesM);
-    final res = await orderApis.checkTypeId(orderM);
-    if (res) {
-      isLoading(false);
-      BuildDialog(description: 'Order Id already exists');
-      return;
+    if (order!.typeId! != typedIdCtrl.text) {
+      final res = await orderApis.checkTypeId(orderM);
+      if (res) {
+        isLoading(false);
+        BuildDialog(description: 'Order Id already exists');
+        return;
+      }
     }
-    if (isUpdate) {
-      await orderApis.update(orderM);
-    } else {
-      await orderApis.create(orderM);
-    }
-    Get.back();
-    clearData();
+    await orderApis.update(orderM);
     isLoading(false);
     BuildDialog(
         title: 'Success',
@@ -694,6 +691,6 @@ class DashboardController extends GetxController {
 
   Stream<QuerySnapshot> watchForUser() async* {
     String id = Preferences.saver.getString('id')!;
-    yield* orderApis.watch(false, id, isAdmin);
+    yield* orderApis.watchJobbyStatus(id, 'Created');
   }
 }

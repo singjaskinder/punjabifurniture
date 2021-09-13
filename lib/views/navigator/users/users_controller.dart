@@ -22,7 +22,7 @@ enum ViewType {
 }
 
 class UsersController extends GetxController {
-  final viewType = (ViewType.manageUser).obs;
+  final viewType = (ViewType.manageAction).obs;
   final userApis = UserRepo();
   final formKey = GlobalKey<FormState>();
   final companyCtrl = TextEditingController();
@@ -33,6 +33,10 @@ class UsersController extends GetxController {
   final passwordCtrl = TextEditingController();
   final status = 'active'.obs;
   final showPassword = true.obs;
+  final isUpdate = false.obs;
+  late String userId;
+  late int userDate;
+  final switchIndex = (0).obs;
 
   @override
   void onReady() {
@@ -41,7 +45,7 @@ class UsersController extends GetxController {
 
   String viewTitle() {
     if (viewType.value == ViewType.addUser) {
-      return 'create user';
+      return isUpdate.value ? 'edit user' : 'create user';
     } else if (viewType.value == ViewType.manageUser) {
       return 'manage user';
     } else {
@@ -51,232 +55,26 @@ class UsersController extends GetxController {
 
   void togglePassword() => showPassword.value = !showPassword.value;
 
-  void showUserDialog(bool isUpdate, UserM? user) {
-    if (isUpdate) {
-      companyCtrl.text = user!.company ?? '';
-      emailCtrl.text = user.email ?? '';
-      phoneCtrl.text = user.phone ?? '';
-      addressCtrl.text = user.address ?? '';
-      nameCtrl.text = user.name ?? '';
-      passwordCtrl.text = '-';
-      status.value = user.status ?? 'active';
+  void updateUser(UserM user) {
+    isUpdate.value = true;
+    viewType.value = ViewType.addUser;
+    userId = user.id!;
+    userDate = user.date!;
+    companyCtrl.text = user.company ?? '';
+    emailCtrl.text = user.email ?? '';
+    phoneCtrl.text = user.phone ?? '';
+    addressCtrl.text = user.address ?? '';
+    nameCtrl.text = user.name ?? '';
+    passwordCtrl.text = user.password ?? '';
+    status.value = user.status ?? 'active';
+  }
+
+  void decide() {
+    if (isUpdate.value) {
+      auUser(true, UserM(id: userId, date: userDate));
+    } else {
+      auUser(false, null);
     }
-    Get.dialog(Scaffold(
-        backgroundColor: AppColors.black.withOpacity(0.5),
-        body: SingleChildScrollView(
-          child: Center(
-              child: Container(
-                  padding: EdgeInsets.all(15),
-                  color: AppColors.white,
-                  width: getValueForScreenType<double>(
-                    context: Get.context!,
-                    mobile: SizeConfig.widthMultiplier * 90,
-                    desktop: SizeConfig.widthMultiplier * 60,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          BuildText(
-                            isUpdate ? 'Update user details' : 'Add user +',
-                            size: getValueForScreenType<double>(
-                              context: Get.context!,
-                              mobile: 2.8,
-                              desktop: 2,
-                            ),
-                            fontWeight: FontWeight.bold,
-                          ),
-                          Spacer(),
-                          IconButton(
-                              onPressed: () {
-                                Get.back();
-                                clearData();
-                              },
-                              icon: Icon(Icons.close))
-                        ],
-                      ),
-                      Divider(
-                        color: AppColors.lightBrown,
-                      ),
-                      Form(
-                        key: formKey,
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              controller: companyCtrl,
-                              style: AppStyles.primaryTextStyle
-                                  .copyWith(fontSize: 18),
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                  labelText: 'Company name',
-                                  filled: true,
-                                  fillColor: AppColors.brown.withOpacity(0.1),
-                                  isDense: true),
-                              validator: (val) => val!.isNotEmpty
-                                  ? null
-                                  : 'Please enter company name',
-                            ),
-                            BuildSizedBox(),
-                            TextFormField(
-                              controller: emailCtrl,
-                              style: AppStyles.primaryTextStyle
-                                  .copyWith(fontSize: 18),
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  filled: true,
-                                  fillColor: AppColors.brown.withOpacity(0.1),
-                                  isDense: true),
-                              validator: (val) => val!.isEmail
-                                  ? null
-                                  : 'Please enter valid email',
-                            ),
-                            BuildSizedBox(),
-                            TextFormField(
-                              controller: phoneCtrl,
-                              style: AppStyles.primaryTextStyle
-                                  .copyWith(fontSize: 18),
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                  labelText: 'Phone number',
-                                  filled: true,
-                                  fillColor: AppColors.brown.withOpacity(0.1),
-                                  isDense: true),
-                              validator: (val) => val!.isNum && val.length == 10
-                                  ? null
-                                  : 'Please enter valid phone number',
-                            ),
-                            BuildSizedBox(),
-                            TextFormField(
-                              controller: addressCtrl,
-                              maxLines: 2,
-                              style: AppStyles.primaryTextStyle
-                                  .copyWith(fontSize: 18),
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                  labelText: 'Address',
-                                  filled: true,
-                                  fillColor: AppColors.brown.withOpacity(0.1),
-                                  isDense: true),
-                              validator: (val) => val!.isNotEmpty
-                                  ? null
-                                  : 'Please enter valid address',
-                            ),
-                            BuildSizedBox(),
-                            TextFormField(
-                              controller: nameCtrl,
-                              style: AppStyles.primaryTextStyle
-                                  .copyWith(fontSize: 18),
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                  labelText: 'User name',
-                                  filled: true,
-                                  fillColor: AppColors.brown.withOpacity(0.1),
-                                  isDense: true),
-                              validator: (val) => val!.isNotEmpty
-                                  ? null
-                                  : 'Please enter valid user name',
-                            ),
-                            BuildSizedBox(),
-                            Visibility(
-                              visible: !isUpdate,
-                              child: Obx(() => TextFormField(
-                                    enabled: !isUpdate,
-                                    controller: passwordCtrl,
-                                    obscureText: showPassword.value,
-                                    style: AppStyles.primaryTextStyle
-                                        .copyWith(fontSize: 18),
-                                    textInputAction: TextInputAction.done,
-                                    decoration: InputDecoration(
-                                        labelText: 'Password',
-                                        filled: true,
-                                        fillColor:
-                                            AppColors.brown.withOpacity(0.1),
-                                        isDense: true,
-                                        suffixIcon: GestureDetector(
-                                          onTap: () => togglePassword(),
-                                          child: Icon(showPassword.value
-                                              ? Icons.lock
-                                              : Icons.lock_open_outlined),
-                                        )),
-                                    validator: (val) => val!.length >= 8
-                                        ? null
-                                        : 'Please enter valid password',
-                                  )),
-                            ),
-                          ],
-                        ),
-                      ),
-                      BuildSizedBox(),
-                      Row(
-                        children: [
-                          BuildText('Status:',
-                              size: getValueForScreenType<double>(
-                                context: Get.context!,
-                                mobile: 2.2,
-                                desktop: 1,
-                              ),
-                              fontWeight: FontWeight.bold),
-                          BuildSizedBox(
-                            width: 2,
-                          ),
-                          GestureDetector(
-                            onTap: () => status.value = 'active',
-                            child: Obx(() => Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: status.value == 'active'
-                                        ? AppColors.lightBrown
-                                        : AppColors.transparent,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: BuildText('ACTIVE',
-                                      size: getValueForScreenType<double>(
-                                        context: Get.context!,
-                                        mobile: 2.2,
-                                        desktop: 1,
-                                      )),
-                                )),
-                          ),
-                          GestureDetector(
-                            onTap: () => status.value = 'inactive',
-                            child: Obx(() => Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: status.value == 'inactive'
-                                        ? AppColors.lightBrown
-                                        : AppColors.transparent,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: BuildText(
-                                    'INACTIVE',
-                                    size: getValueForScreenType<double>(
-                                      context: Get.context!,
-                                      mobile: 2.2,
-                                      desktop: 1,
-                                    ),
-                                  ),
-                                )),
-                          )
-                        ],
-                      ),
-                      BuildSizedBox(
-                        height: 3,
-                      ),
-                      BuildPrimaryButton(
-                        onTap: () => auUser(isUpdate, user),
-                        label: isUpdate ? 'Update Details' : 'Add +',
-                        fontSize: getValueForScreenType<double>(
-                          context: Get.context!,
-                          mobile: 2.5,
-                          desktop: 1.8,
-                        ),
-                      ),
-                      BuildSizedBox(),
-                    ],
-                  ))),
-        )));
   }
 
   Future<void> auUser(bool isUpdate, UserM? userM) async {
@@ -286,7 +84,7 @@ class UsersController extends GetxController {
         isLoading(true);
         final user = UserM(
             id: isUpdate ? userM!.id : '',
-            date: setDate(),
+            date: isUpdate ? userM!.date : setDate(),
             company: companyCtrl.text,
             email: emailCtrl.text,
             phone: phoneCtrl.text,
@@ -305,7 +103,6 @@ class UsersController extends GetxController {
           await userApis.create(user);
           await auth.signOut();
         }
-        Get.back();
         clearData();
         isLoading(false);
         BuildDialog(
@@ -336,6 +133,7 @@ class UsersController extends GetxController {
   }
 
   void clearData() {
+    isUpdate.value = false;
     companyCtrl.clear();
     emailCtrl.clear();
     phoneCtrl.clear();
@@ -343,5 +141,6 @@ class UsersController extends GetxController {
     nameCtrl.clear();
     passwordCtrl.clear();
     status.value = 'active';
+    viewType.value = ViewType.manageAction;
   }
 }

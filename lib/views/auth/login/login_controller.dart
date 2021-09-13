@@ -14,10 +14,10 @@ class LoginController extends GetxController {
   final passwordCtrl = TextEditingController();
 
   void login() async {
-    // emailCtrl.text = 'compy@ee.com';
-    // passwordCtrl.text = '1234567890';
-    emailCtrl.text = 'admin@email.com';
-    passwordCtrl.text = 'qwertyuiop';
+    emailCtrl.text = 'viper@gmail.com';
+    passwordCtrl.text = '1234567890';
+    // emailCtrl.text = 'admin@email.com';
+    // passwordCtrl.text = 'qwertyuiop';
     if (emailCtrl.text.isEmpty) {
       BuildDialog(description: 'Email cannot be empty');
       return;

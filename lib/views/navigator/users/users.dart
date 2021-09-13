@@ -11,6 +11,7 @@ import 'package:punjabifurniture/utils/local.dart';
 import 'package:punjabifurniture/utils/res/app_colors.dart';
 import 'package:punjabifurniture/utils/res/app_styles.dart';
 import 'package:punjabifurniture/utils/size_config.dart';
+import 'package:punjabifurniture/views/navigator/logout/logout.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'users_controller.dart';
 
@@ -41,9 +42,7 @@ class UsersDesktop extends StatelessWidget {
             Obx(
               () => Visibility(
                 visible: controller.viewType.value != ViewType.manageAction,
-                child: BuildBackButton(
-                    onTap: () =>
-                        controller.viewType.value = ViewType.manageAction),
+                child: BuildBackButton(onTap: () => controller.clearData()),
               ),
             ),
             Spacer(),
@@ -113,7 +112,6 @@ class UsersDesktop extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        flex: 2,
                         child: Form(
                           key: controller.formKey,
                           child: Column(
@@ -290,45 +288,66 @@ class UsersDesktop extends StatelessWidget {
                                 ],
                               ),
                               BuildSizedBox(),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  BuildText(
-                                    'Password'.toUpperCase(),
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.white,
+                              Obx(
+                                () => Visibility(
+                                  visible: !(controller.isUpdate.value),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      BuildText(
+                                        'Password'.toUpperCase(),
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.white,
+                                      ),
+                                      BuildSizedBox(),
+                                      SizedBox(
+                                        width: SizeConfig.widthMultiplier * 50,
+                                        child: TextFormField(
+                                          obscureText: true,
+                                          controller: controller.passwordCtrl,
+                                          cursorColor: AppColors.white,
+                                          style: AppStyles.primaryTextStyle
+                                              .copyWith(
+                                                  fontSize: 20,
+                                                  color: AppColors.white),
+                                          textInputAction: TextInputAction.done,
+                                          decoration: AppStyles
+                                              .primaryTextFieldDecor
+                                              .copyWith(
+                                                  filled: true,
+                                                  fillColor: AppColors.brown
+                                                      .withOpacity(0.1),
+                                                  isDense: true),
+                                          validator: (val) => val!.isNotEmpty
+                                              ? null
+                                              : 'Please enter valid password',
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                  BuildSizedBox(),
-                                  SizedBox(
-                                    width: SizeConfig.widthMultiplier * 50,
-                                    child: TextFormField(
-                                      obscureText: true,
-                                      controller: controller.passwordCtrl,
-                                      cursorColor: AppColors.white,
-                                      style: AppStyles.primaryTextStyle
-                                          .copyWith(
-                                              fontSize: 20,
-                                              color: AppColors.white),
-                                      textInputAction: TextInputAction.done,
-                                      decoration: AppStyles
-                                          .primaryTextFieldDecor
-                                          .copyWith(
-                                              filled: true,
-                                              fillColor: AppColors.brown
-                                                  .withOpacity(0.1),
-                                              isDense: true),
-                                      validator: (val) => val!.isNotEmpty
-                                          ? null
-                                          : 'Please enter valid password',
-                                    ),
-                                  )
-                                ],
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      Expanded(child: Container())
+                      BuildSizedBox(
+                        width: 4,
+                      ),
+                      Obx(
+                        () => Visibility(
+                          visible: controller.isUpdate.value,
+                          maintainAnimation: true,
+                          maintainSize: true,
+                          maintainState: true,
+                          child: BuildSwitch(
+                              onSelected: (i) =>
+                                  controller.switchIndex.value = i,
+                              preSelection: controller.switchIndex.value,
+                              labels: ['active', 'inactive'],
+                              title: 'status'),
+                        ),
+                      )
                     ],
                   ),
                   BuildSizedBox(
@@ -339,7 +358,7 @@ class UsersDesktop extends StatelessWidget {
                     child: Container(
                         width: SizeConfig.widthMultiplier * 25,
                         child: BuildWhiteButton(
-                          onTap: () => controller.auUser(false, null),
+                          onTap: () => controller.decide(),
                           label: 'submit',
                         )),
                   ),
@@ -429,18 +448,29 @@ class UsersDesktop extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         BuildListTitle(
+                                            isHeading: false,
                                             title:
                                                 user.company!.capitalizeFirst!,
                                             width: 15),
                                         BuildListTitle(
-                                            title: user.email!, width: 15),
+                                          isHeading: false,
+                                          title: user.email!,
+                                          width: 15,
+                                        ),
                                         BuildListTitle(
-                                            title: user.phone!, width: 15),
+                                            isHeading: false,
+                                            title: user.phone!,
+                                            width: 15),
                                         BuildListTitle(
-                                            title: user.address!, width: 15),
+                                            isHeading: false,
+                                            title: user.address!,
+                                            width: 15),
                                         BuildListTitle(
-                                            title: user.name!, width: 15),
+                                            isHeading: false,
+                                            title: user.name!,
+                                            width: 15),
                                         BuildListTitle(
+                                            isHeading: false,
                                             title: '######' +
                                                 user.password![
                                                     user.password!.length - 1],
@@ -452,115 +482,8 @@ class UsersDesktop extends StatelessWidget {
                                     width: 2,
                                   ),
                                   BuildWhiteButton(
-                                      onTap: () => {}, label: 'view / edit')
-                                ],
-                              );
-                              return ExpansionTile(
-                                backgroundColor: AppColors.white,
-                                collapsedBackgroundColor: AppColors.white,
-                                tilePadding: EdgeInsets.all(10),
-                                childrenPadding: EdgeInsets.all(10),
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    BuildText(makeDate(user.date!),
-                                        size: 0.8, fontWeight: FontWeight.bold),
-                                    // BuildText('#' + user.id!,
-                                    //     size: 1.5, fontWeight: FontWeight.bold),
-                                    BuildSizedBox(),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          width:
-                                              SizeConfig.widthMultiplier * 30,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              BuildText(
-                                                'Company:',
-                                                size: 0.8,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              BuildText(
-                                                user.company!.capitalizeFirst!,
-                                                size: 1.4,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          width:
-                                              SizeConfig.widthMultiplier * 30,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              BuildText(
-                                                'User Name:',
-                                                size: 0.8,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              BuildText(
-                                                user.name!.capitalizeFirst!,
-                                                size: 1.4,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          width:
-                                              SizeConfig.widthMultiplier * 30,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              BuildText(
-                                                'Phone:',
-                                                size: 0.8,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              BuildText(
-                                                user.phone!,
-                                                size: 1.4,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                children: [
-                                  Row(
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          BuildText(
-                                            'Status:',
-                                            size: 0.8,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          BuildText(
-                                            user.status!.capitalizeFirst!,
-                                            size: 1.4,
-                                          ),
-                                        ],
-                                      ),
-                                      Spacer(),
-                                      BuildSecondaryButton(
-                                        onTap: () => controller.showUserDialog(
-                                            true, user),
-                                        label: 'View  / Edit',
-                                        fontSize: 1,
-                                      ),
-                                    ],
-                                  )
+                                      onTap: () => controller.updateUser(user),
+                                      label: 'view / edit')
                                 ],
                               );
                             },
@@ -706,8 +629,7 @@ class UsersMobile extends StatelessWidget {
                                   ),
                                   Spacer(),
                                   BuildSecondaryButton(
-                                    onTap: () =>
-                                        controller.showUserDialog(true, user),
+                                    onTap: () => () {},
                                     label: 'View  / Edit',
                                   ),
                                 ],
@@ -727,7 +649,7 @@ class UsersMobile extends StatelessWidget {
         ],
       ),
       floatingActionButton: BuildRoundedFloatingButton(
-        onTap: () => controller.showUserDialog(false, null),
+        onTap: () => {},
         label: 'Add User +',
         fontSize: 2.4,
       ),
@@ -739,12 +661,14 @@ class BuildListTitle extends StatelessWidget {
   const BuildListTitle(
       {required this.title,
       required this.width,
-      this.isHeading = false,
+      this.isHeading = true,
+      this.isCenter = false,
       Key? key})
       : super(key: key);
   final String title;
   final double width;
   final bool isHeading;
+  final bool isCenter;
 
   @override
   Widget build(BuildContext context) {
@@ -756,6 +680,7 @@ class BuildListTitle extends StatelessWidget {
         size: isHeading ? 1.5 : 1.2,
         fontWeight: isHeading ? FontWeight.bold : FontWeight.normal,
         overflow: TextOverflow.ellipsis,
+        textAlign: isCenter ? TextAlign.center : TextAlign.left,
       ),
     );
   }

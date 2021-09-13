@@ -9,17 +9,18 @@ import 'package:punjabifurniture/views/navigator/history/history.dart';
 import 'package:punjabifurniture/views/navigator/users/users.dart';
 
 import 'logout/logout.dart';
+import 'order/order.dart';
+import 'order_status/order_status.dart';
 
 class BuildNavigatorController extends GetxController {
   final authApis = AuthRepo();
   late bool isAdmin;
-  final selectedIndex = 1.obs;
+  final selectedIndex = 0.obs;
   final menus = [
     NavMenu(label: 'Dashboard', view: Dashboard()),
     NavMenu(label: 'Users', view: Users()),
-    NavMenu(label: 'Order', view: Users()),
-    NavMenu(label: 'Order Status', view: Users()),
-    NavMenu(label: 'Users', view: Users()),
+    NavMenu(label: 'Order', view: OrderV()),
+    NavMenu(label: 'Order Status', view: OrderStatus()),
     NavMenu(label: 'History', view: History()),
     NavMenu(label: 'Logout', view: Logout()),
   ];
@@ -31,10 +32,9 @@ class BuildNavigatorController extends GetxController {
     isAdmin = (Preferences.saver.getString('type') ?? 'admin') == 'admin';
     if (!isAdmin) {
       menus.removeAt(1);
+      menus.removeAt(1);
     }
   }
-
-  
 }
 
 class NavMenu {

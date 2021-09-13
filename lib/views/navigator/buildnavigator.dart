@@ -101,7 +101,7 @@ class NavigationDesktop extends StatelessWidget {
                                   margin: EdgeInsets.only(bottom: 5),
                                   child: BuildText(
                                     controller.menus[i].label!,
-                                    size: 2,
+                                    size: 1.8,
                                     fontWeight:
                                         controller.selectedIndex.value == i
                                             ? FontWeight.bold
@@ -120,9 +120,8 @@ class NavigationDesktop extends StatelessWidget {
                       width: 1.5,
                     ),
                     Expanded(
-                      child: Obx(() => controller
-                          .menus[controller.selectedIndex.value].view!),
-                    )
+                        child: Obx(() => controller
+                            .menus[controller.selectedIndex.value].view!))
                   ],
                 )
               ],

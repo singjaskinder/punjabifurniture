@@ -15,7 +15,7 @@ class LandingController extends GetxController {
     // if (saver.getString('authKey')!.isNotEmpty) {
     //   Get.toNamed(Routes.landing);
     // }
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(Duration(microseconds: 1), () {
       Get.toNamed(user == null ? Routes.login : Routes.home);
     });
     

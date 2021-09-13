@@ -13,7 +13,7 @@ Color hexToColor(String color) =>
 String makePrice(dynamic amount) => '\$ ' + amount.toStringAsFixed(2);
 
 String makeDate(int date) {
-  final format = DateFormat('dd MMM, on EEEE ');
+  final format = DateFormat('dd-MM-yyyy');
   final parsedDate = DateTime.fromMillisecondsSinceEpoch(date);
   return format.format(parsedDate);
 }

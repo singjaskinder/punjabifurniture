@@ -14,6 +14,7 @@ abstract class OrderApis {
   Future<List<UserM>> getUsers();
   Stream<QuerySnapshot> watch(bool isCompleted, String id, bool isAdmin);
   Future<List<String>> validateFiles(List<dynamic> files);
+  Stream<QuerySnapshot> watchJobbyStatus(String id, String status);
 }
 
 class OrderRepo extends OrderApis {
@@ -72,6 +73,16 @@ class OrderRepo extends OrderApis {
           .where('completed', isEqualTo: isCompleted)
           .orderBy('date', descending: true);
     }
+    yield* query.snapshots();
+  }
+
+  @override
+  Stream<QuerySnapshot> watchJobbyStatus(String id, String status) async* {
+    late Query query;
+    query = _orderStore
+        .where('user_id', isEqualTo: id)
+        .where('status', isEqualTo: status)
+        .orderBy('date', descending: true);
     yield* query.snapshots();
   }
 

@@ -16,7 +16,7 @@ class UserRepo extends UserApis {
   Future<void> create(UserM user) async {
     await _userStore.doc(user.id).set(user.toJson());
   }
-
+  
   @override
   Future<void> update(UserM user) async {
     await _userStore.doc(user.id).update(user.toJson());

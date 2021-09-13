@@ -85,7 +85,7 @@ class _BuildSwitchState extends State<BuildSwitch> {
     return Column(
       children: [
         BuildText(
-          widget.title,
+          widget.title.toUpperCase(),
           size: 2.5,
           fontWeight: FontWeight.bold,
           color: AppColors.white,
@@ -116,7 +116,7 @@ class _BuildSwitchState extends State<BuildSwitch> {
                             : AppColors.transparent,
                         borderRadius: BorderRadius.circular(5)),
                     child: BuildText(
-                      widget.labels[i],
+                      widget.labels[i].toUpperCase(),
                       size: 1.5,
                       textAlign: TextAlign.center,
                       color: selectedIndex == i
